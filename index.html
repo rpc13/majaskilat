@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game Majas Kilat</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf6ff;--card:#fff;--ink:#1f2d3d;--muted:#52627a;--blue:#1e9fe0;--green:#1f9d5c;--sun:#ffc633;--coral:#ff6b57;--purple:#8a63f0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b2a}}
+:root[data-theme="dark"]{--bg:#0f1b2a}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);font-family:'Nunito',system-ui,sans-serif;color:var(--ink);display:flex;justify-content:center;padding:12px}
+.app{width:100%;max-width:560px}
+h1,h2{font-family:'Baloo 2','Trebuchet MS',sans-serif;margin:0;line-height:1.1}
+.top{background:linear-gradient(135deg,var(--coral),var(--purple));color:#fff;border-radius:20px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.top h1{font-size:1.5rem;font-weight:800}
+.stat{text-align:right;font-weight:800;font-size:.9rem;line-height:1.3}
+.bar{height:10px;background:rgba(127,127,127,.3);border-radius:99px;margin:10px 0;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--sun);border-radius:99px;transition:width .3s}
+.card{background:var(--card);color:#1f2d3d;border:4px dashed var(--c,var(--blue));border-radius:24px;padding:22px 16px;text-align:center;min-height:210px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative}
+.card .no{position:absolute;top:-4px;left:-4px;background:var(--c,var(--blue));color:#fff;border-radius:20px 0 14px 0;padding:2px 14px;font:800 1rem 'Baloo 2',sans-serif}
+.card .em{font-size:3rem;line-height:1}
+.card p{font-weight:800;font-size:clamp(1.1rem,4.5vw,1.45rem);margin:8px 0 0;line-height:1.3}
+.pop{animation:pop .4s ease}
+@keyframes pop{from{transform:scale(.9) rotate(-2deg);opacity:.2}to{transform:none;opacity:1}}
+.btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.btns button{border:0;border-radius:16px;padding:12px 4px;font:800 .95rem 'Nunito',sans-serif;color:#1f2d3d;cursor:pointer;min-height:64px}
+.btns button span{display:block;font-size:1.4rem}
+.b1{background:#c9f2dc}.b2{background:#ffe29a}.b3{background:#ffc9c0}
+.btns button:disabled{cursor:default;opacity:.55}
+.btns button.ok{outline:4px solid #1f9d5c;opacity:1}
+.btns button.no{outline:4px solid #d93a2b;opacity:1}
+.fb{margin-top:12px;border-radius:16px;padding:10px 14px;font-weight:700;background:var(--card);color:#1f2d3d;min-height:70px}
+.fb b{display:block;font-size:1.1rem}
+.fb.good{border-left:8px solid #1f9d5c}.fb.bad{border-left:8px solid #d93a2b}
+.main{display:block;margin:12px auto 0;background:var(--coral);color:#fff;border:0;border-radius:99px;padding:12px 30px;font:800 1.05rem 'Nunito',sans-serif;cursor:pointer}
+.sec{background:var(--purple)}
+.panel{background:var(--card);color:#1f2d3d;border-radius:24px;padding:22px 18px;text-align:center}
+.panel h2{font-size:1.8rem;color:var(--purple)}
+.big{font:800 3rem 'Baloo 2',sans-serif;color:var(--coral)}
+.how{display:grid;gap:6px;text-align:left;margin:12px 0}
+.how div{border-radius:12px;padding:6px 12px;font-weight:800}
+.rev{text-align:left;margin-top:10px;font-size:.92rem}
+.rev li{margin:4px 0}
+.tm{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center;font-weight:800;margin-top:12px}
+.tm button{border:0;border-radius:99px;padding:10px 20px;background:var(--purple);color:#fff;font:800 1rem 'Nunito',sans-serif;cursor:pointer}
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-top:10px}
+.board div{background:var(--card);color:#1f2d3d;border-radius:14px;padding:6px 8px;text-align:center;font-weight:800;font-size:.9rem;border:3px solid transparent}
+.board div.cur{border-color:var(--coral);background:#fff3c4}
+.turn{background:var(--sun);color:#1f2d3d;border-radius:14px;padding:6px 12px;font-weight:800;text-align:center;margin:10px 0 0}
+#snd{border:0;border-radius:50%;width:42px;height:42px;font-size:1.25rem;background:rgba(255,255,255,.3);color:#fff;cursor:pointer;flex:none}
+:focus-visible{outline:3px solid var(--purple);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.bar i{transition:none}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="top"><h1>Majas Kilat ⚡🧼</h1><div style="display:flex;gap:8px;align-items:center"><button id="snd" aria-label="Matikan suara" aria-pressed="true">🔊</button><div class="stat" id="stat"></div></div></div>
+  <div class="board" id="board" hidden></div>
+
+  <section id="start" class="panel" style="margin-top:12px">
+    <h2>Siap jadi Duta Bersih?</h2>
+    <p>Baca kalimat di kartu, lalu pilih majasnya. Ada 25 kartu acak setiap main (24 kartu untuk 2, 3, atau 4 kelompok, supaya tiap kelompok mendapat giliran sama banyak).</p>
+    <div class="how">
+      <div style="background:#c9f2dc">🙌 Personifikasi: benda bertingkah seperti manusia</div>
+      <div style="background:#ffe29a">✖️ Metafora: A adalah B, tanpa “seperti”</div>
+      <div style="background:#ffc9c0">🤸 Hiperbola: melebih-lebihkan</div>
+    </div>
+    <button class="main" id="go">Main Sendiri 🙋</button>
+    <div class="tm"><span>Main Kelompok 👥</span><button data-t="2">2 kelompok</button><button data-t="3">3 kelompok</button><button data-t="4">4 kelompok</button><button data-t="5">5 kelompok</button></div>
+    <p style="font-size:.85rem;color:#52627a;margin:10px 0 0">Mode kelompok: kartu bergiliran, setiap kelompok berdiskusi lalu menjawab. Benar +10 poin.</p>
+  </section>
+
+  <section id="play" hidden>
+    <div class="turn" id="turn" hidden></div>
+    <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+    <div class="card pop" id="card"><span class="no" id="no"></span><span class="em" id="em"></span><p id="txt"></p></div>
+    <div class="btns" id="btns">
+      <button class="b1" data-a="P"><span>🙌</span>Personifikasi</button>
+      <button class="b2" data-a="M"><span>✖️</span>Metafora</button>
+      <button class="b3" data-a="H"><span>🤸</span>Hiperbola</button>
+    </div>
+    <div class="fb" id="fb" aria-live="polite">Pilih jawabanmu!</div>
+    <button class="main" id="next" hidden>Lanjut ▶</button>
+  </section>
+
+  <section id="end" class="panel" style="margin-top:12px" hidden>
+    <h2 id="title"></h2>
+    <div class="big" id="final"></div>
+    <p id="msg"></p>
+    <div class="rev" id="rev"></div>
+    <button class="main" id="again">Main Lagi 🔁</button>
+  </section>
+</main>
+<script>
+(function(){
+var P='Personifikasi',M='Metafora',H='Hiperbola',NAME={P:P,M:M,H:H};
+var D=[
+["🚰","Keran air melambaikan tangan, mengajak kami mencuci tangan.","P","Keran (benda) melambaikan tangan seperti manusia."],
+["🏞️","Sampah plastik adalah musuh sungai.","M","Sampah disamakan langsung dengan musuh (A adalah B)."],
+["🚽","Antrean toilet sepanjang jalan tol.","H","Panjang antrean dilebih-lebihkan."],
+["🧹","Sapu berbisik pada debu, “Pergilah dari kelas kami!”","P","Sapu berbisik seperti manusia."],
+["🦟","Jentik nyamuk adalah mata-mata kecil di bak mandi.","M","Jentik nyamuk disamakan langsung dengan mata-mata."],
+["🖐️","Tangan yang kotor membawa kuman sejuta banyaknya.","H","Jumlah kuman dilebih-lebihkan menjadi sejuta."],
+["🗑️","Tong sampah tersenyum puas saat perutnya terisi.","P","Tong sampah tersenyum seperti manusia."],
+["💧","Air bersih adalah emas bagi kehidupan.","M","Air bersih disamakan langsung dengan emas."],
+["🕳️","Bau selokan itu tercium sampai ke ujung dunia.","H","Jangkauan bau dilebih-lebihkan."],
+["🧼","Sabun menari menggosok tanganku sampai bersih.","P","Sabun menari seperti manusia."],
+["🏫","Toilet yang bersih adalah surga kecil di sekolah.","M","Toilet bersih disamakan langsung dengan surga kecil."],
+["⛰️","Tumpukan sampah itu setinggi gunung.","H","Tinggi sampah dilebih-lebihkan."],
+["🚿","Wastafel tersenyum menyambut tangan yang bersih.","P","Wastafel tersenyum seperti manusia."],
+["🪑","Debu adalah tamu yang tak pernah pamit dari kolong meja.","M","Debu disamakan langsung dengan tamu."],
+["🍽️","Kantin itu begitu bersih sampai semut bisa bercermin di lantainya.","H","Kebersihan lantai dilebih-lebihkan."],
+["🌊","Selokan yang tersumbat terbatuk-batuk karena kemasukan sampah.","P","Selokan terbatuk-batuk seperti manusia."],
+["🏞️","Sungai yang bersih adalah cermin langit.","M","Sungai disamakan langsung dengan cermin."],
+["🌧️","Genangan di halaman seluas samudra.","H","Luas genangan dilebih-lebihkan."],
+["🧻","Lap tangan setia menunggu giliran mengeringkan tanganku.","P","Lap tangan setia menunggu seperti manusia."],
+["🧽","Jumat Bersih adalah obat mujarab bagi sekolah kami.","M","Jumat Bersih disamakan langsung dengan obat."],
+["⭐","Sampah di kelas lebih banyak daripada bintang di langit.","H","Jumlah sampah dilebih-lebihkan."],
+["🪰","Lalat berpesta di atas makanan yang terbuka.","P","Lalat berpesta seperti manusia."],
+["🔑","Kebersihan adalah kunci kesehatan.","M","Kebersihan disamakan langsung dengan kunci."],
+["🪳","Teriakan temanku melihat kecoak terdengar sampai ke seluruh kota.","H","Jangkauan suara dilebih-lebihkan."],
+["🪥","Sikat gigi menari di sela-sela gigi, mengusir sisa makanan.","P","Sikat gigi menari seperti manusia."],
+["🌳","Pohon di halaman sekolah adalah payung raksasa yang menyejukkan kami.","M","Pohon disamakan langsung dengan payung raksasa."],
+["🚮","Aku sudah mengingatkan temanku seribu kali agar membuang sampah pada tempatnya.","H","Jumlah mengingatkan dilebih-lebihkan menjadi seribu kali."],
+["🪣","Ember bersabar menampung air hujan untuk menyiram tanaman.","P","Ember bersabar seperti manusia."],
+["🧴","Sabun cair adalah senjata ampuh pembasmi kuman.","M","Sabun cair disamakan langsung dengan senjata ampuh."],
+["🚽","Lantai toilet yang basah itu licinnya sampai bisa dipakai main seluncur es.","H","Tingkat licin dilebih-lebihkan."]
+];
+var COL=['#1e9fe0','#2dbb74','#ff6b57','#8a63f0'];
+var N=12,deck,i,score,streak,best,missed,locked,TN=0,ts=[0,0,0,0,0],cur=0;
+var AC=null,SON=true;
+function actx(){if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C){try{AC=new C();}catch(e){}}}if(AC&&AC.state==='suspended'){AC.resume();}return AC;}
+function beep(f,at,d,type,v){var a=actx();if(!a||!SON)return;try{var o=a.createOscillator(),g=a.createGain(),t=a.currentTime+at;o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v||0.25,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+0.02);}catch(e){}}
+function sfx(k){
+  if(k==='ok'){beep(660,0,.15);beep(880,.12,.15);beep(1320,.24,.3);}
+  else if(k==='bonus'){beep(660,0,.12);beep(880,.1,.12);beep(1320,.2,.15);beep(1760,.32,.35);}
+  else if(k==='bad'){beep(220,0,.25,'sawtooth',.16);beep(150,.2,.4,'sawtooth',.16);}
+  else if(k==='win'){[523,659,784,1047].forEach(function(f,x){beep(f,x*.15,.3);});beep(1047,.6,.5);}
+  else if(k==='tick'){beep(520,0,.08);}
+}
+var TM=['Kelompok 1 🐬','Kelompok 2 🐢','Kelompok 3 🦊','Kelompok 4 🐝','Kelompok 5 🐞'];
+function $(id){return document.getElementById(id);}
+function shuffle(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=a[k];a[k]=a[j];a[j]=t;}return a;}
+function stat(){
+  if(TN){var h='',pl=!$('play').hidden;for(var k=0;k<TN;k++){var on=pl&&k===cur;h+='<div class="'+(on?'cur':'')+'">'+(on?'▶ ':'')+TM[k]+'<br>⭐ '+ts[k]+'</div>';}$('board').innerHTML=h;$('stat').innerHTML='';}
+  else{$('stat').innerHTML='⭐ '+score+'<br>🔥 '+streak;}
+}
+function show(sec){['start','play','end'].forEach(function(s){$(s).hidden=(s!==sec);});$('board').hidden=!(TN&&sec==='play');}
+function start(t){
+  TN=t||0;ts=[0,0,0,0,0];cur=0;N=(TN===0||TN===5)?25:24;
+  deck=shuffle(D).slice(0,N);i=0;score=0;streak=0;best=0;missed=[];
+  show('play');render();
+}
+function render(){
+  var c=deck[i];locked=false;
+  $('no').textContent=(i+1)+' / '+N;$('em').textContent=c[0];$('txt').textContent=c[1];
+  $('card').style.setProperty('--c',COL[i%4]);
+  var cd=$('card');cd.classList.remove('pop');void cd.offsetWidth;cd.classList.add('pop');
+  $('prog').style.width=(i/N*100)+'%';
+  [].forEach.call($('btns').children,function(b){b.disabled=false;b.className=b.className.replace(/ ?(ok|no)\b/g,'');});
+  $('fb').className='fb';$('fb').textContent='Pilih jawabanmu!';
+  $('next').hidden=true;
+  if(TN){$('turn').hidden=false;$('turn').textContent='Giliran: '+TM[cur]+'. Berdiskusi dulu, lalu pilih jawaban!';}else{$('turn').hidden=true;}
+  stat();
+}
+function answer(a){
+  if(locked)return;locked=true;
+  var c=deck[i],right=(a===c[2]);
+  [].forEach.call($('btns').children,function(b){
+    b.disabled=true;
+    if(b.dataset.a===c[2])b.classList.add('ok');
+    else if(b.dataset.a===a)b.classList.add('no');
+  });
+  if(right){if(TN){ts[cur]+=10;}else{streak++;best=Math.max(best,streak);score+=10+(streak>=3?5:0);}}
+  else{if(!TN)streak=0;missed.push(c);}
+  $('fb').className='fb '+(right?'good':'bad');
+  $('fb').innerHTML='<b>'+(right?'✅ Benar!'+(TN?' +10 untuk '+TM[cur]:(streak>=3?' Bonus beruntun +5':'')):'❌ Belum tepat. Jawabannya: '+NAME[c[2]])+'</b>'+c[3];
+  sfx(right?((!TN&&streak>=3)?'bonus':'ok'):'bad');
+  stat();
+  $('next').textContent=(i===N-1)?'Lihat Hasil 🏆':'Lanjut ▶';
+  $('next').hidden=false;$('next').focus();
+}
+function finish(){
+  $('prog').style.width='100%';
+  var ok=N-missed.length;
+  if(TN){
+    var ord=[];for(var k=0;k<TN;k++)ord.push([k,ts[k]]);
+    ord.sort(function(a,b){return b[1]-a[1];});
+    var top=ord[0][1],w=ord.filter(function(x){return x[1]===top;});
+    $('title').textContent=w.length>1?'Hasil seri! 🤝':'Pemenang: '+TM[w[0][0]]+' 🏆';
+    $('final').textContent=top+' poin';
+    var m='';ord.forEach(function(x,r){m+=(r+1)+'. '+TM[x[0]]+': '+x[1]+' poin<br>';});
+    $('msg').innerHTML=m;
+  }else{
+    var r=ok/N;$('title').textContent=r>=.9?'Duta Bersih Sejati! 🏆':r>=.65?'Hebat, hampir sempurna! 🌟':r>=.4?'Bagus, terus berlatih! 💪':'Ayo coba lagi! 🧼';
+    $('final').textContent=ok+' / '+N;
+    $('msg').textContent='Skor '+score+' · Beruntun terbaik '+best+' kartu.';
+  }
+  var h='';
+  if(missed.length){h='<b>Yang perlu diulang:</b><ul>';missed.forEach(function(m){h+='<li>'+m[1]+' → <b>'+NAME[m[2]]+'</b>. '+m[3]+'</li>';});h+='</ul>';}
+  else h='<b>Semua jawabanmu benar!</b>';
+  $('rev').innerHTML=h;
+  sfx(TN||ok/N>=.4?'win':'bad');
+  show('end');
+}
+$('snd').onclick=function(){SON=!SON;this.textContent=SON?'🔊':'🔇';this.setAttribute('aria-pressed',SON);this.setAttribute('aria-label',SON?'Matikan suara':'Nyalakan suara');if(SON){sfx('tick');}};
+$('go').onclick=function(){sfx('tick');start(0);};
+$('again').onclick=function(){start(TN);};
+[].forEach.call(document.querySelectorAll('.tm button'),function(b){b.onclick=function(){sfx('tick');start(+b.dataset.t);};});
+$('btns').onclick=function(e){var b=e.target.closest('button');if(b)answer(b.dataset.a);};
+$('next').onclick=function(){if(i===N-1)finish();else{i++;if(TN)cur=(cur+1)%TN;render();}};
+show('start');
+})();
+</script>
+</body>
+</html>
